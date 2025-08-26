@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de CPF - Sistema+LGPD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap; /* Para manter a formatação do JSON */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consulta de CPF</h1>
+        <input type="text" id="cpfInput" placeholder="Digite o CPF (somente números)">
+        <button onclick="consultarCPF()">Consultar</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function consultarCPF() {
+            const cpf = document.getElementById('cpfInput').value.replace(/\D/g, ''); // Remove caracteres não numéricos
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Consultando...';
+
+            if (cpf.length !== 11) {
+                resultDiv.innerHTML = 'Por favor, digite um CPF válido com 11 dígitos.';
+                return;
+            }
+
+            const apiUrl = `https://whs.lgpd.is/f3d49216a16b50729b04/fp/CPF/${cpf}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response(response.ok)) {
+                    throw new Error(`Erro HTTP! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                resultDiv.innerHTML = JSON.stringify(data, null, 2); // Formata o JSON para exibição
+            } catch (error) {
+                resultDiv.innerHTML = `Erro ao consultar CPF: ${error.message}. Verifique se o CPF+ está correto ou se a API está disponível.`;
+                console.error('Erro na consulta:', error);
+            }
+        }
+    </script>
+</body>
+</html>
+
